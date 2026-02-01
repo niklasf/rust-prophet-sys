@@ -8,3 +8,10 @@ license = "GPL-3.0"
 categories = ["external-ffi-bindings", "games"]
 keywords = ["chess", "prophet", "tablebase"]
 edition = "2024"
+
+[build-dependencies]
+bindgen = "0.72.1"
+cc = "1.2.55"
+
+[dependencies]
+zstd-sys = "2.0.16"
