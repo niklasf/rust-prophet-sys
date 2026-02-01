@@ -4,7 +4,7 @@
 [![docs.rs](https://docs.rs/prophet-sys/badge.svg)](https://docs.rs/prophet-sys)
 
 Low-level Rust bindings for [libprophet](https://github.com/markus7800/prophet_tb_gen_and_probe),
-a library to probe 6-piece chess endgame tablebases (DTM), "Prophet TB".
+a library to probe 6-piece "Prophet" chess endgame tablebases (depth to mate).
 
 ## Documentation
 

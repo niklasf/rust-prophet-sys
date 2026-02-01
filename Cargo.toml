@@ -2,7 +2,7 @@
 name = "prophet-sys"
 version = "0.1.0"
 links = "prophet"
-description = "Low-level bindings for libprophet, a library to probe 6-piece chess endgame tablebases (DTM)"
+description = "Low-level bindings for libprophet, a library to probe 6-piece \"Prophet\" chess endgame tablebases (depth to mate)"
 repository = "https://github.com/niklasf/prophet-sys"
 license = "GPL-3.0"
 categories = ["external-ffi-bindings", "games"]
