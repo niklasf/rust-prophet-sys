@@ -1,5 +1,13 @@
 use std::env;
 use std::path::PathBuf;
+use tap::Pipe as _;
+
+fn has_target_feature(feature: &str) -> bool {
+    env::var("CARGO_CFG_TARGET_FEATURE")
+        .unwrap()
+        .split(',')
+        .any(|f| f == feature)
+}
 
 fn main() {
     let out_dir = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -27,6 +35,13 @@ fn main() {
         .flag_if_supported("-Wshadow")
         .include("prophet_tb_gen_and_probe/src")
         .include(env::var_os("DEP_ZSTD_INCLUDE").expect("provided by zstd-sys"))
+        .pipe(|b| {
+            if has_target_feature("popcnt") {
+                b.define("USE_POPCNT", None)
+            } else {
+                b
+            }
+        })
         .file("prophet_tb_gen_and_probe/src/bitboard.cpp")
         .file("prophet_tb_gen_and_probe/src/compressed_tb.cpp")
         .file("prophet_tb_gen_and_probe/src/eg_movegen.cpp")
