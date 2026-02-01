@@ -10,15 +10,6 @@ a library to probe 6-piece "Prophet" chess endgame tablebases (depth to mate).
 
 [API reference](https://docs.rs/prophet-sys)
 
-## Fuzzing
-
-Run with unbounded memory usage and manually monitor *private* memory,
-because the tablebase files are memory mapped:
-
-```
-cargo +nightly fuzz run probe_dtm -- -rss_limit_mb=0
-```
-
 ## License
 
 These bindings and the original library are licensed under the GPL-3.0.
