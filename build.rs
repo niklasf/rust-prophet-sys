@@ -36,6 +36,13 @@ fn main() {
         .include("prophet_tb_gen_and_probe/src")
         .include(env::var_os("DEP_ZSTD_INCLUDE").expect("provided by zstd-sys"))
         .pipe(|b| {
+            if env::var("CARGO_CFG_TARGET_POINTER_WIDTH").unwrap() == "64" {
+                b.define("IS_64BIT", None)
+            } else {
+                b
+            }
+        })
+        .pipe(|b| {
             if has_target_feature("popcnt") {
                 b.define("USE_POPCNT", None)
             } else {
