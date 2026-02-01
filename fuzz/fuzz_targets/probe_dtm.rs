@@ -1,5 +1,7 @@
 #![no_main]
 
+use std::{ffi::c_int, num::NonZeroU32, sync::Once};
+
 use arbitrary::Arbitrary;
 use libfuzzer_sys::fuzz_target;
 use prophet_sys::{
@@ -9,28 +11,21 @@ use prophet_sys::{
 use shakmaty::{
     Bitboard, CastlingMode, Chess, Color, EnPassantMode, Piece, Position, Setup, Square,
 };
-use std::ffi::c_int;
-use std::iter::zip;
-use std::num::NonZeroU32;
-use std::sync::Once;
 
 #[derive(Debug, Arbitrary)]
 struct EndgameSetup {
-    pieces: [Option<Piece>; 6],
-    squares: [Square; 6],
-    stm: Color,
+    pieces: [Option<(Square, Piece)>; 6],
+    turn: Color,
     ep_square: Option<Square>,
 }
 
 impl EndgameSetup {
     fn to_setup(&self) -> Setup {
         Setup {
-            board: zip(self.pieces, self.squares)
-                .flat_map(|(piece, square)| piece.map(|piece| (square, piece)))
-                .collect(),
+            board: self.pieces.into_iter().flatten().collect(),
             promoted: Bitboard::EMPTY,
             pockets: None,
-            turn: self.stm,
+            turn: self.turn,
             ep_square: self.ep_square,
             castling_rights: Bitboard::EMPTY,
             halfmoves: 0,
@@ -48,11 +43,12 @@ fuzz_target!(|setup: EndgameSetup| {
     });
 
     if let Ok(pos) = setup.to_setup().position::<Chess>(CastlingMode::Chess960) {
-        let pieces: [c_int; 6] = setup
-            .pieces
-            .map(|piece| piece.map_or(0, |p| c_int::from(p.role) + p.color.fold_wb(0, 8)));
-
-        let squares: [c_int; 6] = setup.squares.map(c_int::from);
+        let mut pieces: [c_int; 6] = [0; 6];
+        let mut squares: [c_int; 6] = [0; 6];
+        for (i, (square, piece)) in pos.board().iter().enumerate() {
+            pieces[i] = c_int::from(piece.role) + piece.color.fold_wb(0, 8);
+            squares[i] = c_int::from(square);
+        }
 
         unsafe {
             let dctx = prophet_tb_create_decompress_ctx();
