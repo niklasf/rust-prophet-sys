@@ -27,4 +27,4 @@ jobs:
           submodules: true
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo install cargo-fuzz
-      - run: cargo fuzz run probe_dtm -- --max_total_time=60s
+      - run: cargo fuzz run probe_dtm -- -rss_limit_mb=0 -max_total_time=60s
