@@ -28,9 +28,9 @@ mod tests {
                 4,  // e1
                 12, // e2
                 60, // e8
-                0, // unused
-                0, // unused
-                0, // unused
+                0,  // unused
+                0,  // unused
+                0,  // unused
             ];
             let dtm = prophet_tb_probe_dtm_dctx(
                 pieces.as_ptr(),

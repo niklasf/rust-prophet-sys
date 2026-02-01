@@ -1,5 +1,5 @@
-use std::env;
-use std::path::PathBuf;
+use std::{env, path::PathBuf};
+
 use tap::Pipe as _;
 
 fn has_target_feature(feature: &str) -> bool {
