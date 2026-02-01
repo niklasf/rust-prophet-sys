@@ -56,7 +56,7 @@ fuzz_target!(|setup: EndgameSetup| {
                 pieces.as_ptr(),
                 squares.as_ptr(),
                 pos.turn().fold_wb(0, 1),
-                pos.ep_square(EnPassantMode::Always).map_or(64, c_int::from),
+                pos.ep_square(EnPassantMode::Legal).map_or(64, c_int::from),
                 dctx,
             );
             prophet_tb_free_decompress_ctx(dctx);
