@@ -1,12 +1,14 @@
 #![no_main]
 
+use std::iter::zip;
 use std::{ffi::c_int, num::NonZeroU32};
 
 use arbitrary::Arbitrary;
 use libfuzzer_sys::fuzz_target;
 use prophet_sys::{
     prophet_tb_add_path, prophet_tb_create_decompress_ctx, prophet_tb_deinit,
-    prophet_tb_free_decompress_ctx, prophet_tb_init, prophet_tb_probe_dtm_dctx,
+    prophet_tb_free_decompress_ctx, prophet_tb_init, prophet_tb_is_valid_position,
+    prophet_tb_probe_dtm_dctx,
 };
 use shakmaty::{
     Bitboard, CastlingMode, Chess, Color, EnPassantMode, Piece, Position, Setup, Square,
@@ -41,27 +43,32 @@ fuzz_target!(|setups: Vec<EndgameSetup>| {
         assert!(11 <= prophet_tb_add_path(c"tables".as_ptr()));
     }
 
+    let dctx = unsafe { prophet_tb_create_decompress_ctx() };
+
     for setup in setups {
         if let Ok(pos) = setup.to_setup().position::<Chess>(CastlingMode::Chess960) {
             let mut pieces: [c_int; 6] = [0; 6];
             let mut squares: [c_int; 6] = [0; 6];
-            for (i, (square, piece)) in pos.board().iter().enumerate() {
-                pieces[i] = c_int::from(piece.role) + piece.color.fold_wb(0, 8);
-                squares[i] = c_int::from(square);
+            for ((square, piece), (p, s)) in zip(pos.board(), zip(&mut pieces, &mut squares)) {
+                *p = c_int::from(piece.role) + piece.color.fold_wb(0, 8);
+                *s = c_int::from(square);
             }
+            let stm = pos.turn().fold_wb(0, 1);
+            let ep_square = pos.ep_square(EnPassantMode::Legal).map_or(0, c_int::from);
 
             unsafe {
-                let dctx = prophet_tb_create_decompress_ctx();
-                prophet_tb_probe_dtm_dctx(
-                    pieces.as_ptr(),
-                    squares.as_ptr(),
-                    pos.turn().fold_wb(0, 1),
-                    pos.ep_square(EnPassantMode::Legal).map_or(64, c_int::from),
-                    dctx,
+                assert_eq!(
+                    prophet_tb_is_valid_position(pieces.as_ptr(), squares.as_ptr(), stm, ep_square),
+                    1
                 );
-                prophet_tb_free_decompress_ctx(dctx);
+
+                prophet_tb_probe_dtm_dctx(pieces.as_ptr(), squares.as_ptr(), stm, ep_square, dctx);
             }
         }
+    }
+
+    unsafe {
+        prophet_tb_free_decompress_ctx(dctx);
     }
 
     unsafe {

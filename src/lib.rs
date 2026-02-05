@@ -13,8 +13,6 @@ mod tests {
         unsafe {
             prophet_tb_init();
 
-            let dctx = prophet_tb_create_decompress_ctx();
-
             // 4k3/8/8/8/8/8/4Q3/4K3 b - - 0 1
             let pieces: [c_int; 6] = [
                 6,  // white king
@@ -32,13 +30,17 @@ mod tests {
                 0,  // unused
                 0,  // unused
             ];
-            let dtm = prophet_tb_probe_dtm_dctx(
-                pieces.as_ptr(),
-                squares.as_ptr(),
-                1,  // black to move
-                64, // no en-passant square
-                dctx,
+            let stm = 1; // black to move
+            let ep_square = 0; // no en-passant square
+
+            assert_eq!(
+                prophet_tb_is_valid_position(pieces.as_ptr(), squares.as_ptr(), stm, ep_square),
+                1
             );
+
+            let dctx = prophet_tb_create_decompress_ctx();
+            let dtm =
+                prophet_tb_probe_dtm_dctx(pieces.as_ptr(), squares.as_ptr(), stm, ep_square, dctx);
             assert_eq!(dtm, -1001); // no tables added yet
 
             assert!(11 <= prophet_tb_add_path(c"tables".as_ptr()));
