@@ -13,7 +13,9 @@ a library to probe 6-piece "Prophet" chess endgame tablebases (depth to mate).
 
 ## Safety
 
-Verify tablebase checksums before using them. Only probe with valid positions.
+Verify tablebase checksums before using them.
+Do not modify, move or delete tablebase files that are loaded.
+Only probe with valid positions.
 
 ## License
 
