@@ -8,7 +8,8 @@ a library to probe 6-piece "Prophet" chess endgame tablebases (depth to mate).
 
 ## Documentation
 
-[API reference](https://docs.rs/prophet-sys)
+* [Generated API reference](https://docs.rs/prophet-sys)
+* [`prophet.h`](https://github.com/markus7800/prophet_tb_gen_and_probe/blob/main/src/prophet.h)
 
 ## License
 
