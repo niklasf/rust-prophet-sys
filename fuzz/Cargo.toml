@@ -8,11 +8,20 @@ cargo-fuzz = true
 
 [dependencies]
 arbitrary = { version = "1.4.2", features = ["derive"] }
+arrayvec = "0.7.6"
+gaviota-sys = "0.1.28"
 libfuzzer-sys = "0.4"
 shakmaty = { version = "0.30.0", features = ["arbitrary"] }
 
 [dependencies.prophet-sys]
 path = ".."
+
+[[bin]]
+name = "compare_gaviota"
+path = "fuzz_targets/compare_gaviota.rs"
+test = false
+doc = false
+bench = false
 
 [[bin]]
 name = "probe_dtm"
