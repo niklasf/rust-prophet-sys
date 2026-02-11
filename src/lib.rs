@@ -31,7 +31,7 @@ mod tests {
                 0,  // unused
             ];
             let stm = 1; // black to move
-            let ep_square = 0; // no en-passant square
+            let ep_square = 64; // no en-passant square
 
             assert_eq!(
                 prophet_tb_is_valid_position(pieces.as_ptr(), squares.as_ptr(), stm, ep_square),
@@ -44,8 +44,9 @@ mod tests {
             assert_eq!(dtm, -1001); // no tables added yet
 
             assert!(11 <= prophet_tb_add_path(c"tables".as_ptr()));
-            let dtm = prophet_tb_probe_dtm_dctx(pieces.as_ptr(), squares.as_ptr(), 1, 64, dctx);
-            assert_eq!(dtm, 16);
+            let dtm =
+                prophet_tb_probe_dtm_dctx(pieces.as_ptr(), squares.as_ptr(), stm, ep_square, dctx);
+            assert_eq!(dtm, -16);
 
             prophet_tb_free_decompress_ctx(dctx);
 

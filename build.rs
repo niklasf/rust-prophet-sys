@@ -60,6 +60,7 @@ fn main() {
         .file("prophet_tb_gen_and_probe/src/prophet.cpp")
         .file("prophet_tb_gen_and_probe/src/triangular_indexes.cpp")
         .file("prophet_tb_gen_and_probe/src/uci.cpp")
+        .emit_rerun_if_env_changed(true)
         .compile("prophet");
 
     println!("cargo:root={}", out_dir.display());

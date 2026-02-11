@@ -54,7 +54,7 @@ fuzz_target!(|setups: Vec<EndgameSetup>| {
                 *s = c_int::from(square);
             }
             let stm = pos.turn().fold_wb(0, 1);
-            let ep_square = pos.ep_square(EnPassantMode::Legal).map_or(0, c_int::from);
+            let ep_square = pos.ep_square(EnPassantMode::Legal).map_or(64, c_int::from);
 
             unsafe {
                 assert_eq!(
